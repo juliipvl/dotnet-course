@@ -14,18 +14,18 @@ namespace Core.Models
 
         public string Title 
         {   
-            get { return _title; } 
-            set { _title = value; } 
+            get => _title;  
+            set => _title = value;  
         }
         public List<string> Ingredients 
         { 
-            get { return new List<string>(_ingredients); } 
-            set { _ingredients = new List<string>(value); } 
+            get => new List<string>(_ingredients); 
+            set => _ingredients = new List<string>(value);  
         }
         public string Instructions 
         { 
-            get { return _instructions; } 
-            set { _instructions = value; } 
+            get => _instructions;  
+            set => _instructions = value;  
         }
     }
 }

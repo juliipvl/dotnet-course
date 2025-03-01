@@ -15,23 +15,23 @@ namespace Core.Models
 
         public string Title 
         { 
-            get { return _title; } 
-            set { string _title; } 
+            get => _title;
+            set => _title = value; 
         }
         public string Author 
         { 
-            get { return _author; } 
-            set { _author = value; } 
+            get => _author; 
+            set => _author = value; 
         }
         public string Description 
         { 
-            get { return _description; } 
-            set { _description = value; } 
+            get => _description;
+            set => _description = value; 
         }
         public Recipe[] Recipes 
         { 
-            get { return _recipes; } 
-            set { _recipes = value; } 
+            get => _recipes;  
+            set => _recipes = value; 
         }    
     }
 }
