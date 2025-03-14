@@ -15,5 +15,6 @@ namespace Application.Abstractions
         void ChangeUsername();
         void ChangePassword(string password);
         void DeleteAccount();
+        User GetUser(Predicate<User> filter); 
     }
 }

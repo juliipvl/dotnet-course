@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Application.Implementations;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,7 @@ namespace Application.Abstractions
         void Publish();
         void View();
         void Read();
+
+        List<RecipeBook> FilterBooks(Predicate<RecipeBook> filter);
     }
 }

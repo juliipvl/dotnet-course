@@ -1,15 +1,27 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
+using Application.Abstractions;
+using Application.Implementations;
+using Core.Models;
 
 namespace CourseProject
 {
     internal class Program
     {
-        class Cat
-        {
-            public string Name;
-        } 
+        //class Cat
+        //{
+        //    public string Name;
+        //}
         static void Main(string[] args)
         {
+
+            UserService userService = new UserService();
+            User user = userService.GetUser((user) => user.UserId == 1);
+
+            BookService bookService = new BookService();
+            bookService.FilterBooks((book) => book.Author == "John Doe"); 
+
+            /*
             // Value Type
             Console.WriteLine("VALUE TYPE");
             int firstVal = 5;
@@ -36,6 +48,7 @@ namespace CourseProject
             Console.WriteLine("\n---After changing the value in the second cat---");
             Console.WriteLine($"Second cat will change name: {cat2.Name}");
             Console.WriteLine($"Both cats point to the same address, so the name of the first one will also change: {cat1.Name}");
+            */
 
         }
     }
