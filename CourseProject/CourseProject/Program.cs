@@ -42,7 +42,7 @@ namespace CourseProject
             Console.WriteLine($"Both cats point to the same address, so the name of the first one will also change: {cat1.Name}");
             */
 
-        CustomList<int> list = new CustomList<int>();
+            CustomList<int> list = new CustomList<int>();
             Console.WriteLine($"Initial Capacity: {list.Capacity}");
             Console.WriteLine($"Initial Count: {list.Count}");
 
@@ -51,7 +51,7 @@ namespace CourseProject
             list.Add(3);
             list.Add(4);
             list.Add(5);
-            list.Add(6); 
+            list.Add(6);
 
             Console.WriteLine($"Count after adding elements: {list.Count}");
             Console.WriteLine($"Capacity after resize: {list.Capacity}");
