@@ -18,8 +18,13 @@ namespace CourseProject
             UserService userService = new UserService();
             User user = userService.GetUser((user) => user.UserId == 1);
 
-            BookService bookService = new BookService();
-            bookService.FilterBooks((book) => book.Author == "John Doe"); 
+            IRecipeBookService recipeBookService = new CookbookRecipeService();
+            recipeBookService.FilterBooks((book) => book.Author == "John Doe");
+            recipeBookService.FilterBooks((book) => book.Title == "Pancakes");
+
+            recipeBookService = new MealRecipeService();
+            recipeBookService.FilterBooks((book) => book.Author == "David Johnson");
+            recipeBookService.FilterBooks((book) => book.Title == "Franch meals");
 
             /*
             // Value Type
