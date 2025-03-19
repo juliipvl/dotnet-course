@@ -1,29 +1,29 @@
 ﻿using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Abstractions;
+
 
 namespace Application.Implementations
 {
-    public class UserService : Application.Abstractions.IUserService
+    public class UserService : IUserService
     {
-        private List<User> users = [new User(), new User(), new User()];
-
-        public void ChangePassword(string password)
+        public void ChangePassword(long userId, string newPassword)
         {
             throw new NotImplementedException();
         }
 
-        public void ChangeUsername()
+        public void ChangeUser(long userId, string newUsername)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteAccount()
+        public void DeleteAccount(long userId)
         {
             throw new NotImplementedException();
+        }
+
+        public User GetUser(Func<long, bool> func)
+        {
+            return new List <User>().Find((user) => func(user.Id));
         }
 
         public void Login(string username, string password)
@@ -31,7 +31,7 @@ namespace Application.Implementations
             throw new NotImplementedException();
         }
 
-        public void Logout()
+        public void Logout(long userId)
         {
             throw new NotImplementedException();
         }
@@ -39,11 +39,6 @@ namespace Application.Implementations
         public void Register(string username, string password)
         {
             throw new NotImplementedException();
-        }
-
-        public User GetUser(Predicate<User> filter) 
-        {
-            return users.Find(filter);
         }
     }
 }

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class Recipe
+    public class Ingredient
     {
         public long Id { get; set; }
 
-        public string Title { get;  set; }
+        public string Name { get; set; }
 
-        public List<Ingredient> Ingredients { get; set; } 
+        public double Quantity { get; set; } 
 
-        public List<Instruction> Instructions { get; set; } 
+        public string Unit { get; set; } 
     }
 }
