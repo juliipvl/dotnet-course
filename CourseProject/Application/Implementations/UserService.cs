@@ -1,7 +1,6 @@
 ﻿using Core.Models;
 using Application.Abstractions;
 
-
 namespace Application.Implementations
 {
     public class UserService : IUserService
@@ -21,7 +20,7 @@ namespace Application.Implementations
             throw new NotImplementedException();
         }
 
-        public User GetUser(Func<long, bool> func)
+        public User GetUserById(Func<long, bool> func)
         {
             return new List <User>().Find((user) => func(user.Id));
         }

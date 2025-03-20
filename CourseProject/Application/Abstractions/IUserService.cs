@@ -1,9 +1,4 @@
 ﻿using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Abstractions
 {
@@ -21,6 +16,6 @@ namespace Application.Abstractions
 
         void DeleteAccount(long userId);
 
-        User GetUser(Func<long, bool> func); 
+        User GetUserById(Func<long, bool> func); 
     }
 }

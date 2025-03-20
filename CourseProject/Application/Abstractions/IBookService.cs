@@ -1,5 +1,4 @@
-﻿using Application.Implementations;
-using Core.Models;
+﻿using Core.Models;
 
 namespace Application.Abstractions
 {

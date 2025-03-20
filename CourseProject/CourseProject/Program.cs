@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
-using Application.Abstractions;
+﻿using Application.Abstractions;
 using Application.Implementations;
 using Core.Models;
 
@@ -12,7 +10,7 @@ namespace CourseProject
         {
 
             UserService userService = new UserService();
-            User user = userService.GetUser((id) => id == 1);
+            User user = userService.GetUserById((id) => id == 1);
 
             IBookService recipeBookService = new BookService();
             recipeBookService.GetFilterBooks((author) => author == "John Doe");
