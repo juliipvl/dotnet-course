@@ -1,4 +1,6 @@
-﻿namespace CourseProject
+﻿using System.Xml.Linq;
+
+namespace CourseProject
 {
     internal class Program
     {
@@ -6,7 +8,7 @@
         {
             CustomList<int> list = new CustomList<int>();
 
-            Console.WriteLine($"Initial Capacity: {list.Capacity}");
+            Console.WriteLine($"Initial Capacity: {list.Capacity}"); 
             Console.WriteLine($"Initial Count: {list.Count}");
 
             list.Add(1);
@@ -33,11 +35,32 @@
             CustomList<int> arrayList = new CustomList<int>(arr);
             Console.WriteLine($"Array constructor count: {arrayList.Count}");
 
-            Console.WriteLine("Elements in the list:");
+            Console.WriteLine("Elements in the list before reverse method:");
             foreach (int item in list)
             {
                 Console.WriteLine(item);
             }
+
+            Console.WriteLine("Elements in the list after reverse method:");
+            list.Reverse();
+            foreach (int item in list)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine($"Index of element 1: {list.IndexOf(1)}");
+
+            var filteredList = list.Where((item) => (item % 2 == 0));
+
+            Console.WriteLine("Filtered even numbers in the list:");
+            foreach (int item in filteredList)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine($"Identify if list contains 0: {list.Any((item) => (item == 0))}");
+
+            Console.WriteLine($"Find first 6 in list: {list.First((item) => (item == 6))}");
         }
     }
 }

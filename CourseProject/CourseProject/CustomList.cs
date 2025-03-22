@@ -33,6 +33,75 @@ namespace CourseProject
             Array.Copy(items, _items, _size);
         }
 
+        public CustomList<T> Where(Func<T, bool> predicate)
+        {
+            CustomList<T> newItems = new CustomList<T>();
+
+            foreach (var item in this)
+            {
+                if (predicate(item))
+                {
+                    newItems.Add(item);
+                }
+            }
+
+            return newItems;
+        }
+
+        public bool Any(Func<T, bool> predicate)
+        {
+            foreach (var item in this)
+            {
+                if (predicate(item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public T First(Func<T, bool> predicate)
+        {
+
+            foreach (var item in this)
+            {
+                if (predicate(item))
+                {
+                    return item;
+                }
+            }
+
+            throw new InvalidOperationException("No element matches the condition.");
+        }
+
+        public int IndexOf(T item)
+        {
+            if (item != null)
+            {
+                for (int i = 0; i < _items.Length; i++)
+                {
+                    if (item.Equals(_items[i]))
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return -1;
+        }
+
+        public void Reverse()
+        {
+            for (int i = 0; i < _size / 2; i++)
+            {
+                int lastIndex = _size - 1 - i;
+                T temp = _items[i];
+                _items[i] = _items[lastIndex];
+                _items[lastIndex] = temp;
+            }
+        }
+
         public T this[int index]
         {
             get
@@ -76,7 +145,7 @@ namespace CourseProject
             {
                 _items[i] = _items[i + 1];
             }
-            _items[_size - 1] = default(T);
+            _items[_size - 1] = default;
             _size--;
         }
 
