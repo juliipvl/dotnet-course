@@ -1,8 +1,8 @@
 ﻿namespace Core.Models
 {
-    public class Book
+    public class Book: IEntity
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Title { get; set; }
 

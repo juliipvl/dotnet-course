@@ -1,8 +1,8 @@
 ﻿namespace Core.Models
 {
-    public class User
+    public class User: IEntity
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 
