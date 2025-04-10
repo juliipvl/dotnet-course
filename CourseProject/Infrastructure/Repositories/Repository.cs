@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories
     public class Repository<TEntity> where TEntity : BaseModel
     {
         private readonly JsonService _jsonService;
-        private string _fileName;
+        private readonly string _fileName;
         private List<TEntity> _cache;
         private bool _isCacheLoaded = false;
 
@@ -19,9 +19,9 @@ namespace Infrastructure.Repositories
 
         private void EnsureFileExists()
         {
-            if (!File.Exists(_fileName))
+            if (!_jsonService.Exists(_fileName))
             {
-                File.WriteAllText(_fileName, "[]");
+                _jsonService.Write(_fileName, new List<TEntity>());
             }
         }
 
@@ -29,15 +29,13 @@ namespace Infrastructure.Repositories
         {
             if (_isCacheLoaded) return;
 
-            var json = File.ReadAllText(_fileName);
-            _cache = JsonSerializer.Deserialize<List<TEntity>>(json) ?? new List<TEntity>();
+            _cache = _jsonService.Read<List<TEntity>>(_fileName) ?? new List<TEntity>();
             _isCacheLoaded = true;
         }
 
         private void SaveChanges()
         {
-            var json = JsonSerializer.Serialize(_cache, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(_fileName, json);
+            _jsonService.Write(_fileName, _cache);
         }
 
         public List<TEntity> GetAll()
@@ -49,18 +47,16 @@ namespace Infrastructure.Repositories
         public TEntity GetById(Guid id)
         {
             LoadCache();
-            return _cache.FirstOrDefault(b => b.Id == id);
+            return _cache.FirstOrDefault(x => x.Id == id);
         }
 
         public void Add(TEntity entity)
         {
             LoadCache();
-
             if (entity.Id == Guid.Empty)
             {
                 entity.Id = Guid.NewGuid();
             }
-
             _cache.Add(entity);
             SaveChanges();
         }
@@ -68,7 +64,7 @@ namespace Infrastructure.Repositories
         public void Update(TEntity entity)
         {
             LoadCache();
-            var index = _cache.FindIndex(b => b.Id == entity.Id);
+            var index = _cache.FindIndex(x => x.Id == entity.Id);
             if (index >= 0)
             {
                 _cache[index] = entity;
@@ -79,8 +75,17 @@ namespace Infrastructure.Repositories
         public void Delete(Guid id)
         {
             LoadCache();
-            _cache.RemoveAll(b => b.Id == id);
-            SaveChanges();
+            var removed = _cache.RemoveAll(x => x.Id == id);
+            if (removed > 0)
+            {
+                SaveChanges();
+            }
+        }
+
+        public void Reload()
+        {
+            _isCacheLoaded = false;
+            LoadCache();
         }
     }
 }

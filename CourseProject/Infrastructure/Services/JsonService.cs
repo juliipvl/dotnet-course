@@ -17,9 +17,13 @@ namespace Infrastructure.Repositories
                 if (!Directory.Exists(_dataDirectory))
                     Directory.CreateDirectory(_dataDirectory);
             }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error occurs when trying to create directory: {_dataDirectory}");
+            }
             catch (Exception ex)
             {
-                throw new IOException($"Помилка під час створення директорії: {_dataDirectory}", ex);
+                Console.WriteLine($"Something went wrong");
             }
         }
 
@@ -30,9 +34,15 @@ namespace Infrastructure.Repositories
                 var filePath = GetFilePath(fileName);
                 return File.Exists(filePath);
             }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error occurs when checking existence of file: {fileName}");
+                return false;
+            }
             catch (Exception ex)
             {
-                throw new IOException($"Помилка перевірки існування файлу: {fileName}", ex);
+                Console.WriteLine($"Something went wrong");
+                return false;
             }
         }
 
@@ -46,9 +56,15 @@ namespace Infrastructure.Repositories
                 var json = File.ReadAllText(filePath);
                 return JsonSerializer.Deserialize<T>(json);
             }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error occurs when reading file: {fileName}");
+                return null;
+            }
             catch (Exception ex)
             {
-                throw new IOException($"Помилка зчитування файлу: {fileName}", ex);
+                Console.WriteLine($"Something went wrong");
+                return null;
             }
         }
 
@@ -60,23 +76,13 @@ namespace Infrastructure.Repositories
                 var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(filePath, json);
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
-                throw new IOException($"Помилка запису файлу: {fileName}", ex);
-            }
-        }
-
-        public void Delete(string fileName)
-        {
-            try
-            {
-                var filePath = GetFilePath(fileName);
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
+                Console.WriteLine($"Error occurs when writing to file: {fileName}");
             }
             catch (Exception ex)
             {
-                throw new IOException($"Помилка видалення файлу: {fileName}", ex);
+                Console.WriteLine($"Something went wrong");
             }
         }
 
