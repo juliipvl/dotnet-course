@@ -8,14 +8,14 @@ namespace Application.Abstractions
 
         void Login(string username, string password);
 
-        void Logout(long userId);
+        void Logout(Guid userId);
 
-        void ChangeUser(long userId, string newUsername);
+        void ChangeUser(Guid userId, string newUsername);
 
-        void ChangePassword(long userId, string newPassword);
+        void ChangePassword(Guid userId, string newPassword);
 
-        void DeleteAccount(long userId);
+        void DeleteAccount(Guid userId);
 
-        User GetUserById(Func<long, bool> func); 
+        User GetUserById(Func<Guid, bool> func); 
     }
 }

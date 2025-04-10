@@ -1,9 +1,7 @@
 ﻿namespace Core.Models
 {
-    public class Instruction: IEntity
+    public class Instruction: BaseModel
     {
-        public Guid Id { get; set; }
-
         public int StepNumber { get; set; } 
 
         public string Description { get; set; } 

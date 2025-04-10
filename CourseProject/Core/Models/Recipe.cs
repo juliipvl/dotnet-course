@@ -1,9 +1,7 @@
 ﻿namespace Core.Models
 {
-    public class Recipe: IEntity
+    public class Recipe: BaseModel
     {
-        public Guid Id { get; set; }
-
         public string Title { get;  set; }
 
         public List<Ingredient> Ingredients { get; set; } 

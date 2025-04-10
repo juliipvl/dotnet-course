@@ -1,59 +1,86 @@
 ﻿using Core.Models;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
-    public abstract class Repository<TEntity> where TEntity : class, IEntity
+    public class Repository<TEntity> where TEntity : BaseModel
     {
         private readonly JsonService _jsonService;
-        private const string IndexFileName = "index.json";
+        private string _fileName;
+        private List<TEntity> _cache;
+        private bool _isCacheLoaded = false;
 
-        public Repository(JsonService jsonService)
+        public Repository(JsonService jsonService, string fileName)
         {
             _jsonService = jsonService;
-            EnsureIndexFileExists();
+            _fileName = fileName;
+            EnsureFileExists();
+        }
+
+        private void EnsureFileExists()
+        {
+            if (!File.Exists(_fileName))
+            {
+                File.WriteAllText(_fileName, "[]");
+            }
+        }
+
+        private void LoadCache()
+        {
+            if (_isCacheLoaded) return;
+
+            var json = File.ReadAllText(_fileName);
+            _cache = JsonSerializer.Deserialize<List<TEntity>>(json) ?? new List<TEntity>();
+            _isCacheLoaded = true;
+        }
+
+        private void SaveChanges()
+        {
+            var json = JsonSerializer.Serialize(_cache, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_fileName, json);
         }
 
         public List<TEntity> GetAll()
         {
-            var ids = LoadIndex();
-            return ids.Select(GetById).Where(entity => entity != null).ToList();
+            LoadCache();
+            return new List<TEntity>(_cache);
         }
 
-        public TEntity GetById(Guid id) => _jsonService.Read<TEntity>($"{id}.json");
+        public TEntity GetById(Guid id)
+        {
+            LoadCache();
+            return _cache.FirstOrDefault(b => b.Id == id);
+        }
 
         public void Add(TEntity entity)
         {
-            var ids = LoadIndex();
-            if (ids.Contains(entity.Id)) return;
+            LoadCache();
 
-            _jsonService.Write($"{entity.Id}.json", entity);
-            ids.Add(entity.Id);
-            SaveIndex(ids);
+            if (entity.Id == Guid.Empty)
+            {
+                entity.Id = Guid.NewGuid();
+            }
+
+            _cache.Add(entity);
+            SaveChanges();
         }
 
         public void Update(TEntity entity)
         {
-            if (!_jsonService.Exists($"{entity.Id}.json")) return;
-            _jsonService.Write($"{entity.Id}.json", entity);
+            LoadCache();
+            var index = _cache.FindIndex(b => b.Id == entity.Id);
+            if (index >= 0)
+            {
+                _cache[index] = entity;
+                SaveChanges();
+            }
         }
 
         public void Delete(Guid id)
         {
-            _jsonService.Delete($"{id}.json");
-            var ids = LoadIndex();
-            ids.Remove(id);
-            SaveIndex(ids);
+            LoadCache();
+            _cache.RemoveAll(b => b.Id == id);
+            SaveChanges();
         }
-
-        private void EnsureIndexFileExists()
-        {
-            if (!_jsonService.Exists(IndexFileName))
-                _jsonService.Write(IndexFileName, new List<Guid>());
-        }
-
-        private List<Guid> LoadIndex() => _jsonService.Read<List<Guid>>(IndexFileName) ?? new List<Guid>();
-
-        private void SaveIndex(List<Guid> index) => _jsonService.Write(IndexFileName, index);
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Core.Models
 {
-    public class Ingredient: IEntity
+    public class Ingredient: BaseModel
     {
         public Guid Id { get; set; }
 

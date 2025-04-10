@@ -5,22 +5,22 @@ namespace Application.Implementations
 {
     public class UserService : IUserService
     {
-        public void ChangePassword(long userId, string newPassword)
+        public void ChangePassword(Guid userId, string newPassword)
         {
             throw new NotImplementedException();
         }
 
-        public void ChangeUser(long userId, string newUsername)
+        public void ChangeUser(Guid userId, string newUsername)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteAccount(long userId)
+        public void DeleteAccount(Guid userId)
         {
             throw new NotImplementedException();
         }
 
-        public User GetUserById(Func<long, bool> func)
+        public User GetUserById(Func<Guid, bool> func)
         {
             return new List <User>().Find((user) => func(user.Id));
         }
@@ -30,7 +30,7 @@ namespace Application.Implementations
             throw new NotImplementedException();
         }
 
-        public void Logout(long userId)
+        public void Logout(Guid userId)
         {
             throw new NotImplementedException();
         }
