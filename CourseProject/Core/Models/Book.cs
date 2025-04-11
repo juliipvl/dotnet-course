@@ -1,9 +1,7 @@
 ﻿namespace Core.Models
 {
-    public class Book
+    public class Book: BaseModel
     {
-        public long Id { get; set; }
-
         public string Title { get; set; }
 
         public string Author { get; set; }

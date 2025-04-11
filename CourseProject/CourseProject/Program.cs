@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using Core.Models;
+using Infrastructure.Repositories;
 
 namespace CourseProject
 {
@@ -6,61 +7,53 @@ namespace CourseProject
     {
         static void Main(string[] args)
         {
-            CustomList<int> list = new CustomList<int>();
+            var dataDir = "Data"; 
+            var jsonService = new JsonService(dataDir);
+            var recipeRepo = new Repository<Recipe>(jsonService, "recipes.json");
 
-            Console.WriteLine($"Initial Capacity: {list.Capacity}"); 
-            Console.WriteLine($"Initial Count: {list.Count}");
-
-            list.Add(1);
-            list.Add(2);
-            list.Add(3);
-            list.Add(4);
-            list.Add(5);
-            list.Add(6);
-
-            Console.WriteLine($"Count after adding elements: {list.Count}");
-            Console.WriteLine($"Capacity after resize: {list.Capacity}");
-
-            Console.WriteLine($"Element at index 2: {list[2]}");
-            list[2] = 10;
-            Console.WriteLine($"New element at index 2: {list[2]}");
-
-            list.Remove(10);
-            Console.WriteLine($"Count after removing element: {list.Count}");
-
-            list.RemoveAt(1);
-            Console.WriteLine($"Count after removing at index 1: {list.Count}");
-
-            int[] arr = { 100, 200, 300 };
-            CustomList<int> arrayList = new CustomList<int>(arr);
-            Console.WriteLine($"Array constructor count: {arrayList.Count}");
-
-            Console.WriteLine("Elements in the list before reverse method:");
-            foreach (int item in list)
+            var recipe = new Recipe
             {
-                Console.WriteLine(item);
+                Id = Guid.NewGuid(),
+                Title = "Pasta Carbonara",
+                Ingredients = new List<Ingredient>
+                {
+                new Ingredient { Id = Guid.NewGuid(), Name = "Spaghetti", Quantity = 200, Unit = "grams" },
+                new Ingredient { Id = Guid.NewGuid(), Name = "Eggs", Quantity = 2, Unit = "pieces" },
+                new Ingredient { Id = Guid.NewGuid(), Name = "Parmesan Cheese", Quantity = 50, Unit = "grams" },
+                new Ingredient { Id = Guid.NewGuid(), Name = "Bacon", Quantity = 100, Unit = "grams" }
+                },
+                Instructions = new List<Instruction>
+                {
+                new Instruction { Id = Guid.NewGuid(), StepNumber = 1, Description = "Boil spaghetti." },
+                new Instruction { Id = Guid.NewGuid(), StepNumber = 2, Description = "Fry bacon." },
+                new Instruction { Id = Guid.NewGuid(), StepNumber = 3, Description = "Mix eggs and cheese." },
+                new Instruction { Id = Guid.NewGuid(), StepNumber = 4, Description = "Combine all and serve." }
+                }
+            };
+
+            recipeRepo.Add(recipe);
+            Console.WriteLine("Recipe added.");
+
+            var allRecipes = recipeRepo.GetAll();
+            foreach (var r in allRecipes)
+            {
+                Console.WriteLine($"\nRecipe: {r.Title}");
+                Console.WriteLine("Ingredients:");
+                foreach (var ing in r.Ingredients)
+                    Console.WriteLine($"- {ing.Quantity} {ing.Unit} {ing.Name}");
+
+                Console.WriteLine("Instructions:");
+                foreach (var ins in r.Instructions)
+                    Console.WriteLine($"{ins.StepNumber}. {ins.Description}");
             }
 
-            Console.WriteLine("Elements in the list after reverse method:");
-            list.Reverse();
-            foreach (int item in list)
+            if (allRecipes.Count > 0)
             {
-                Console.WriteLine(item);
+                var first = allRecipes[0];
+                first.Title += " (Updated)";
+                recipeRepo.Update(first);
+                Console.WriteLine("Recipe updated.");
             }
-
-            Console.WriteLine($"Index of element 1: {list.IndexOf(1)}");
-
-            var filteredList = list.Where((item) => (item % 2 == 0));
-
-            Console.WriteLine("Filtered even numbers in the list:");
-            foreach (int item in filteredList)
-            {
-                Console.WriteLine(item);
-            }
-
-            Console.WriteLine($"Identify if list contains 0: {list.Any((item) => (item == 0))}");
-
-            Console.WriteLine($"Find first 6 in list: {list.First((item) => (item == 6))}");
         }
     }
 }
