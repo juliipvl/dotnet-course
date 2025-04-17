@@ -1,19 +1,20 @@
-﻿using Core.Models;
-using System.Text.Json;
+﻿using Core.IRepositories;
+using Core.Models;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
-    public class Repository<TEntity> where TEntity : BaseModel
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseModel
     {
         private readonly JsonService _jsonService;
         private readonly string _fileName;
         private List<TEntity> _cache;
         private bool _isCacheLoaded = false;
 
-        public Repository(JsonService jsonService, string fileName)
+        public Repository(JsonService jsonService)
         {
             _jsonService = jsonService;
-            _fileName = fileName;
+            _fileName = typeof(TEntity).Name.ToLower() + "s.json";
             EnsureFileExists();
         }
 

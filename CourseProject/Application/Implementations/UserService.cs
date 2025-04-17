@@ -1,10 +1,17 @@
 ﻿using Core.Models;
 using Application.Abstractions;
+using Core.IRepositories;
 
 namespace Application.Implementations
 {
     public class UserService : IUserService
     {
+        private readonly IRepository<User> _repository;
+
+        public UserService(IRepository<User> repository)
+        {
+            _repository = repository;
+        }
         public void ChangePassword(Guid userId, string newPassword)
         {
             throw new NotImplementedException();
@@ -22,7 +29,7 @@ namespace Application.Implementations
 
         public User GetUserById(Func<Guid, bool> func)
         {
-            return new List <User>().Find((user) => func(user.Id));
+            return _repository.GetAll().FirstOrDefault(user => func(user.Id));
         }
 
         public void Login(string username, string password)
