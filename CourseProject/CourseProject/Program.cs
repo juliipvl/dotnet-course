@@ -1,58 +1,166 @@
-﻿using Core.Models;
-using Infrastructure.Repositories;
+﻿using System;
+using System.Threading;
 
 namespace CourseProject
 {
+    class Person
+    {
+        public string Name;
+        public int Age;
+    }
+
     internal class Program
     {
+        static object lock1 = new object();
+        static object lock2 = new object();
+
+        static object fixedLock1 = new object();
+        static object fixedLock2 = new object();
+
+        static Person person = new Person { Name = "Julia", Age = 22 };
+
         static void Main(string[] args)
         {
-            var dataDir = "Data"; 
-            var jsonService = new JsonService(dataDir);
-            var recipeRepo = new Repository<Recipe>(jsonService, "recipes.json");
+            Console.WriteLine("DEADLOCK HAPPENS");
 
-            var recipe = new Recipe
+            Thread thread1 = new Thread(() =>
             {
-                Id = Guid.NewGuid(),
-                Title = "Pasta Carbonara",
-                Ingredients = new List<Ingredient>
+                lock (lock1)
                 {
-                new Ingredient { Id = Guid.NewGuid(), Name = "Spaghetti", Quantity = 200, Unit = "grams" },
-                new Ingredient { Id = Guid.NewGuid(), Name = "Eggs", Quantity = 2, Unit = "pieces" },
-                new Ingredient { Id = Guid.NewGuid(), Name = "Parmesan Cheese", Quantity = 50, Unit = "grams" },
-                new Ingredient { Id = Guid.NewGuid(), Name = "Bacon", Quantity = 100, Unit = "grams" }
-                },
-                Instructions = new List<Instruction>
-                {
-                new Instruction { Id = Guid.NewGuid(), StepNumber = 1, Description = "Boil spaghetti." },
-                new Instruction { Id = Guid.NewGuid(), StepNumber = 2, Description = "Fry bacon." },
-                new Instruction { Id = Guid.NewGuid(), StepNumber = 3, Description = "Mix eggs and cheese." },
-                new Instruction { Id = Guid.NewGuid(), StepNumber = 4, Description = "Combine all and serve." }
+                    Thread.Sleep(1000);
+                    lock (lock2)
+                    {
+                        Console.WriteLine("Thread 1 (deadlock)");
+                    }
                 }
-            };
+            });
 
-            recipeRepo.Add(recipe);
-            Console.WriteLine("Recipe added.");
-
-            var allRecipes = recipeRepo.GetAll();
-            foreach (var r in allRecipes)
+            Thread thread2 = new Thread(() =>
             {
-                Console.WriteLine($"\nRecipe: {r.Title}");
-                Console.WriteLine("Ingredients:");
-                foreach (var ing in r.Ingredients)
-                    Console.WriteLine($"- {ing.Quantity} {ing.Unit} {ing.Name}");
+                lock (lock2)
+                {
+                    Thread.Sleep(1000);
+                    lock (lock1)
+                    {
+                        Console.WriteLine("Thread 2 (deadlock)");
+                    }
+                }
+            });
 
-                Console.WriteLine("Instructions:");
-                foreach (var ins in r.Instructions)
-                    Console.WriteLine($"{ins.StepNumber}. {ins.Description}");
+            thread1.Start();
+            thread2.Start();
+            thread1.Join(3000);
+            thread2.Join(3000);
+
+            Console.WriteLine("\nFIXED DEADLOCK");
+
+            Thread thread3 = new Thread(() =>
+            {
+                lock (fixedLock1)
+                {
+                    Thread.Sleep(1000);
+                    lock (fixedLock2)
+                    {
+                        Console.WriteLine("Thread 3 (fixed)");
+                    }
+                }
+            });
+
+            Thread thread4 = new Thread(() =>
+            {
+                lock (fixedLock1)
+                {
+                    Thread.Sleep(1000);
+                    lock (fixedLock2)
+                    {
+                        Console.WriteLine("Thread 4 (fixed)");
+                    }
+                }
+            });
+
+            thread3.Start();
+            thread4.Start();
+            thread3.Join();
+            thread4.Join();
+
+            Console.WriteLine("\nRACE CONDITION HAPPENS");
+
+            for (int i = 0; i < 50; i++)
+            {
+                Thread writePerson = new Thread(() =>
+                {
+                    person.Name = "Yulia";
+                    Thread.Sleep(30);
+
+                    person.Age = 20;
+                });
+
+                Thread readPerson = new Thread(() =>
+                {
+                    string name = person.Name;
+                    int age = person.Age;
+
+                    if (name == "Yulia" && age == 22)
+                    {
+                        Console.WriteLine($"Race Condition: {name} {age}");
+                    }
+                });
+
+                writePerson.Start();
+                readPerson.Start();
+                writePerson.Join();
+                readPerson.Join();
             }
 
-            if (allRecipes.Count > 0)
+            Console.WriteLine("\nFIXED RACE CONDITION");
+
+            object personLock = new object();
+            bool bugDetected = false;
+
+            for (int i = 0; i < 50; i++)
             {
-                var first = allRecipes[0];
-                first.Title += " (Updated)";
-                recipeRepo.Update(first);
-                Console.WriteLine("Recipe updated.");
+                lock (personLock)
+                {
+                    person = new Person { Name = "Julia", Age = 22 };
+                }
+
+                Thread writer = new Thread(() =>
+                {
+                    lock (personLock)
+                    {
+                        person.Name = "Yulia";
+                        Thread.Sleep(30);
+                        person.Age = 20;
+                    }
+                });
+
+                Thread reader = new Thread(() =>
+                {
+                    string name;
+                    int age;
+
+                    lock (personLock)
+                    {
+                        name = person.Name;
+                        age = person.Age;
+                    }
+
+                    if (name == "Yulia" && age == 22)
+                    {
+                        Console.WriteLine($"❗ STILL BUG (shouldn't happen): {name} {age}");
+                        bugDetected = true;
+                    }
+                });
+
+                writer.Start();
+                reader.Start();
+                writer.Join();
+                reader.Join();
+            }
+
+            if (!bugDetected)
+            {
+                Console.WriteLine("No race condition detected");
             }
         }
     }
