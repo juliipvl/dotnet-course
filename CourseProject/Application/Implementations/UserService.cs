@@ -1,41 +1,50 @@
 ﻿using Core.Models;
 using Application.Abstractions;
+using Core.IRepositories;
 
 namespace Application.Implementations
 {
     public class UserService : IUserService
     {
-        public void ChangePassword(Guid userId, string newPassword)
+        private readonly IRepository<User> _repository;
+
+        public UserService(IRepository<User> repository)
+        {
+            _repository = repository;
+        }
+
+        public async Task<User> GetUserById(Func<Guid, bool> func)
+        {
+            var users = await _repository.GetAllAsync();
+            return users.FirstOrDefault(user => func(user.Id));
+        }
+
+        public Task ChangePassword(Guid userId, string newPassword)
         {
             throw new NotImplementedException();
         }
 
-        public void ChangeUser(Guid userId, string newUsername)
+        public Task ChangeUser(Guid userId, string newUsername)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteAccount(Guid userId)
+        public Task DeleteAccount(Guid userId)
         {
             throw new NotImplementedException();
         }
 
-        public User GetUserById(Func<Guid, bool> func)
-        {
-            return new List <User>().Find((user) => func(user.Id));
-        }
-
-        public void Login(string username, string password)
+        public Task Login(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public void Logout(Guid userId)
+        public Task Logout(Guid userId)
         {
             throw new NotImplementedException();
         }
 
-        public void Register(string username, string password)
+        public Task Register(string username, string password)
         {
             throw new NotImplementedException();
         }

@@ -5,10 +5,9 @@ namespace Application.Implementations
 {
     public class RecipeService : IRecipeService
     {
-        public void Read(Book book)
+        public Task ReadAsync(Book book)
         {
             throw new NotImplementedException();
         }
-
     }
 }

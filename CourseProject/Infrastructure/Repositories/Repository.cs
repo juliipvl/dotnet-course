@@ -1,9 +1,9 @@
-﻿using Core.Models;
-using System.Text.Json;
+﻿using Core.IRepositories;
+using Core.Models;
 
 namespace Infrastructure.Repositories
 {
-    public class Repository<TEntity> where TEntity : BaseModel
+    public class Repository<TEntity>: IRepository<TEntity> where TEntity : BaseModel
     {
         private readonly JsonService _jsonService;
         private readonly string _fileName;
@@ -14,78 +14,79 @@ namespace Infrastructure.Repositories
         {
             _jsonService = jsonService;
             _fileName = fileName;
-            EnsureFileExists();
         }
 
-        private void EnsureFileExists()
+        private async Task EnsureFileExistsAsync()
         {
             if (!_jsonService.Exists(_fileName))
             {
-                _jsonService.Write(_fileName, new List<TEntity>());
+                await _jsonService.WriteAsync(_fileName, new List<TEntity>());
             }
         }
 
-        private void LoadCache()
+        private async Task LoadCacheAsync()
         {
             if (_isCacheLoaded) return;
 
-            _cache = _jsonService.Read<List<TEntity>>(_fileName) ?? new List<TEntity>();
+            await EnsureFileExistsAsync();
+
+            _cache = await _jsonService.ReadAsync<List<TEntity>>(_fileName) ?? new List<TEntity>();
             _isCacheLoaded = true;
         }
 
-        private void SaveChanges()
+        private async Task SaveChangesAsync()
         {
-            _jsonService.Write(_fileName, _cache);
+            await _jsonService.WriteAsync(_fileName, _cache);
         }
 
-        public List<TEntity> GetAll()
+        public async Task<List<TEntity>> GetAllAsync()
         {
-            LoadCache();
+            await LoadCacheAsync();
             return new List<TEntity>(_cache);
         }
 
-        public TEntity GetById(Guid id)
+        public async Task<TEntity> GetByIdAsync(Guid id)
         {
-            LoadCache();
+            await LoadCacheAsync();
             return _cache.FirstOrDefault(x => x.Id == id);
         }
 
-        public void Add(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
-            LoadCache();
+            await LoadCacheAsync();
             if (entity.Id == Guid.Empty)
             {
                 entity.Id = Guid.NewGuid();
             }
             _cache.Add(entity);
-            SaveChanges();
+            await SaveChangesAsync();
         }
 
-        public void Update(TEntity entity)
+        public async Task UpdateAsync(TEntity entity)
         {
-            LoadCache();
+            await LoadCacheAsync();
             var index = _cache.FindIndex(x => x.Id == entity.Id);
             if (index >= 0)
             {
                 _cache[index] = entity;
-                SaveChanges();
+                await SaveChangesAsync();
             }
         }
 
-        public void Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            LoadCache();
+            await LoadCacheAsync();
             var removed = _cache.RemoveAll(x => x.Id == id);
             if (removed > 0)
             {
-                SaveChanges();
+                await SaveChangesAsync();
             }
         }
 
-        public void Reload()
+        public async Task ReloadAsync()
         {
             _isCacheLoaded = false;
-            LoadCache();
+            await LoadCacheAsync();
         }
     }
 }

@@ -1,21 +1,30 @@
 ﻿using Core.Models;
 using Application.Abstractions;
+using Core.IRepositories;
 
 namespace Application.Implementations
 {
     public class BookService : IBookService
     {
-        public List<Book> GetFilterBooks(Func<string, bool> filter)
+        private readonly IRepository<Book> _repository;
+
+        public BookService(IRepository<Book> repository)
         {
-            return new List<Book>().FindAll((book) => filter(book.Author));
+            _repository = repository;
         }
 
-        public void Publish(Book book)
+        public async Task<List<Book>> GetFilterBooksAsync(Func<string, bool> filter)
+        {
+            var books = await _repository.GetAllAsync();
+            return books.FindAll(book => filter(book.Author));
+        }
+
+        public Task PublishAsync(Book book)
         {
             throw new NotImplementedException();
         }
 
-        public List<Book> View()
+        public Task<List<Book>> ViewAsync()
         {
             throw new NotImplementedException();
         }

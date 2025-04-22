@@ -1,22 +1,16 @@
 ﻿using Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Core.IRepositories
 {
     public interface IRepository<TEntity> 
     {
-        List<TEntity> GetAll();
+        Task<List<TEntity>> GetAllAsync();
 
-        TEntity GetById(Guid id);
+        Task<TEntity> GetByIdAsync(Guid id);
 
-        void Add(TEntity entity);
+        Task AddAsync(TEntity entity);
 
-        void Update(TEntity entity);
+        Task UpdateAsync(TEntity entity);
 
-        void Delete(Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

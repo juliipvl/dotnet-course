@@ -4,6 +4,6 @@ namespace Application.Abstractions
 {
     public interface IRecipeService
     {
-        void Read(Book book);
+        Task ReadAsync(Book book);
     }
 }
