@@ -4,18 +4,18 @@ namespace Application.Abstractions
 {
     public interface IUserService
     {
-        void Register(string username, string password);
+        Task Register(string username, string password);
 
-        void Login(string username, string password);
+        Task Login(string username, string password);
 
-        void Logout(Guid userId);
+        Task Logout(Guid userId);
 
-        void ChangeUser(Guid userId, string newUsername);
+        Task ChangeUser(Guid userId, string newUsername);
 
-        void ChangePassword(Guid userId, string newPassword);
+        Task ChangePassword(Guid userId, string newPassword);
 
-        void DeleteAccount(Guid userId);
+        Task DeleteAccount(Guid userId);
 
-        User GetUserById(Func<Guid, bool> func); 
+        Task<User> GetUserById(Func<Guid, bool> func); 
     }
 }

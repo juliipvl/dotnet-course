@@ -4,10 +4,10 @@ namespace Application.Abstractions
 {
     public interface IBookService
     {
-        void Publish(Book book);
+        Task PublishAsync(Book book);
 
-        List<Book> View();
+        Task<List<Book>> ViewAsync();
 
-        List<Book> GetFilterBooks(Func<string, bool> filter);
+        Task<List<Book>> GetFilterBooksAsync(Func<string, bool> filter);
     }
 }

@@ -46,14 +46,14 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public T Read<T>(string fileName) where T : class
+        public async Task<T> ReadAsync<T>(string fileName) where T : class
         {
             try
             {
                 var filePath = GetFilePath(fileName);
                 if (!File.Exists(filePath)) return null;
 
-                var json = File.ReadAllText(filePath);
+                var json = await File.ReadAllTextAsync(filePath);
                 return JsonSerializer.Deserialize<T>(json);
             }
             catch (IOException ex)
@@ -68,13 +68,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void Write<T>(string fileName, T data)
+        public async Task WriteAsync<T>(string fileName, T data)
         {
             try
             {
                 var filePath = GetFilePath(fileName);
                 var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(filePath, json);
+                await File.WriteAllTextAsync(filePath, json);
             }
             catch (IOException ex)
             {
@@ -91,5 +91,4 @@ namespace Infrastructure.Repositories
             return Path.Combine(_dataDirectory, fileName);
         }
     }
-
 }
